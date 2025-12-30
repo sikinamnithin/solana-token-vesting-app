@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datetime Timezone Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .result-item {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 3px;
+        }
+        .result-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 200px;
+        }
+        .result-value {
+            color: #333;
+            font-family: monospace;
+        }
+        .timezone-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕐 Datetime-Local Timezone Test</h1>
+
+        <div class="timezone-info">
+            <strong>Your Current Timezone:</strong>
+            <div id="timezoneInfo"></div>
+        </div>
+
+        <div class="input-group">
+            <label for="timeInput">Select a date and time:</label>
+            <input type="datetime-local" id="timeInput" />
+        </div>
+
+        <button onclick="testConversion()">Test Conversion</button>
+
+        <div id="result" class="result">
+            <h3>Conversion Results:</h3>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Show current timezone info
+        const now = new Date();
+        const offset = -now.getTimezoneOffset();
+        const offsetHours = Math.floor(Math.abs(offset) / 60);
+        const offsetMinutes = Math.abs(offset) % 60;
+        const offsetString = `UTC${offset >= 0 ? '+' : '-'}${offsetHours}:${offsetMinutes.toString().padStart(2, '0')}`;
+
+        document.getElementById('timezoneInfo').innerHTML = `
+            <div style="margin-top: 10px;">
+                <strong>${offsetString}</strong><br>
+                Current local time: ${now.toLocaleString()}<br>
+                Current UTC time: ${now.toUTCString()}
+            </div>
+        `;
+
+        function testConversion() {
+            const input = document.getElementById('timeInput').value;
+
+            if (!input) {
+                alert('Please select a date and time first!');
+                return;
+            }
+
+            // Create Date object from datetime-local input
+            const date = new Date(input);
+
+            // Get Unix timestamp
+            const unixTimestamp = Math.floor(date.getTime() / 1000);
+
+            // Calculate what the Solana program will see
+            const programDate = new Date(unixTimestamp * 1000);
+
+            const results = `
+                <div class="result-item">
+                    <span class="result-label">Input value:</span>
+                    <span class="result-value">${input}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Parsed as (Local):</span>
+                    <span class="result-value">${date.toString()}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Parsed as (UTC):</span>
+                    <span class="result-value">${date.toUTCString()}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Local time display:</span>
+                    <span class="result-value">${date.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Local hours:</span>
+                    <span class="result-value">${date.getHours()}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">UTC hours:</span>
+                    <span class="result-value">${date.getUTCHours()}</span>
+                </div>
+                <div class="result-item" style="background: #fff3cd; border-left: 4px solid #ffc107;">
+                    <span class="result-label">Unix Timestamp:</span>
+                    <span class="result-value" style="font-size: 18px; font-weight: bold;">${unixTimestamp}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Blockchain will see (UTC):</span>
+                    <span class="result-value">${programDate.toUTCString()}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Blockchain will see (Local):</span>
+                    <span class="result-value">${programDate.toLocaleString()}</span>
+                </div>
+                <div class="result-item" style="background: ${date.getHours() === date.getUTCHours() ? '#f8d7da' : '#d4edda'};">
+                    <span class="result-label">Status:</span>
+                    <span class="result-value">
+                        ${date.getHours() === date.getUTCHours()
+                            ? '❌ WARNING: Local and UTC hours are the same! Timezone conversion may not be working.'
+                            : '✅ GOOD: Timezone conversion is working correctly!'}
+                    </span>
+                </div>
+            `;
+
+            document.getElementById('resultContent').innerHTML = results;
+            document.getElementById('result').classList.add('show');
+        }
+
+        // Set default to current time + 1 hour for easy testing
+        const defaultTime = new Date();
+        defaultTime.setHours(defaultTime.getHours() + 1);
+        const defaultValue = defaultTime.toISOString().slice(0, 16);
+        document.getElementById('timeInput').value = defaultValue;
+    </script>
+</body>
+</html>

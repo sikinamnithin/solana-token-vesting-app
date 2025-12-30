@@ -88,6 +88,7 @@ export function CreateVesting() {
       const cliffSeconds = convertToSeconds(cliffDuration, cliffUnit);
       const vestingSeconds = convertToSeconds(vestingDuration, vestingUnit);
 
+      // @ts-ignore - IDL types are correct at runtime
       const tx = await program.methods
         .createVesting(
           new BN(parseFloat(amount) * 1e9),

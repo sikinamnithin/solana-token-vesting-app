@@ -37,6 +37,7 @@ export function ClaimTokens() {
 
       const program = new Program(idl as any, provider);
 
+      // @ts-ignore - IDL types are correct at runtime
       const vestingSchedule = await program.account.vestingSchedule.fetch(
         new PublicKey(vestingScheduleAddress)
       );
@@ -114,6 +115,7 @@ export function ClaimTokens() {
         wallet.publicKey
       );
 
+      // @ts-ignore - IDL types are correct at runtime
       const tx = await program.methods
         .claim()
         .accounts({

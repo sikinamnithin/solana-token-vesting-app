@@ -5,6 +5,14 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./contexts/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./*.{js,ts,jsx,tsx}",
+  ],
+  safelist: [
+    'bg-gradient-to-br',
+    'from-purple-900',
+    'via-blue-900',
+    'to-indigo-900',
   ],
   theme: {
     extend: {
